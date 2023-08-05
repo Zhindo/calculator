@@ -23,7 +23,8 @@ function divide(a, b) {
 //all the values of the calculator stored here
 const answer = document.getElementById('answer');
 const total = document.getElementById('total');
-const clear = document.getElementById('clear');
+const clearButton = document.getElementById('clear');
+const deleteButton = document.getElementById('delete');
 const number = document.querySelectorAll('[data-number]');
 const symbol = document.querySelectorAll('[data-symbol]');
 const equals = document.getElementById('equals');
@@ -38,7 +39,9 @@ symbol.forEach((button) =>
   button.addEventListener('click', () => operationSymbol(button.textContent)) 
 );
 
-clear.addEventListener('click', clearCalculator);
+clearButton.addEventListener('click', clearCalculator);
+
+deleteButton.addEventListener('click', deleteNumber);
 
 function appendNumber(number) {
   if (answer.textContent === '0' || shouldResetScreen)
@@ -47,27 +50,38 @@ function appendNumber(number) {
 }
 
 function operationSymbol(operator) {
-    if (operator == '+' || operator == '-' || operator == '×' || operator == '÷') {
-        total.textContent = answer.textContent + " " + operator;
-        let firstNumber = answer.textContent;
+
+    if (operator !== null) {
+        let currentOperator = operator;
+        total.textContent = answer.textContent + " " + currentOperator;
+        let firstNumber = Number(answer.textContent);
+        
         answer.textContent = 0;
+        let secondNumber;
+        
         equals.addEventListener('click', function() {
-            if (firstNumber !== null) {
-                secondNumber = answer.textContent;
-            }
-            if (secondNumber !== null ) {
-                answer.textContent = getAnswer(operator, firstNumber, secondNumber)
-                operator = null;
+            if (currentOperator !== null && firstNumber !== null) {
+                secondNumber = Number(answer.textContent);
+                answer.textContent = getAnswer(currentOperator, firstNumber, secondNumber);
+                total.textContent = answer.textContent;
+                firstNumber = null;
                 secondNumber = null;
             }
         })
-    }
-    else {
-        alert("Invalid");
+        
     }
     
 }
 
+function deleteNumber() {
+    answer.textContent = answer.textContent.slice(0, -1);
+}
+
+function stopCalculator() {
+    secondNumber = '';
+    operator = null;
+    firstNumber = '';
+}
 
 function getAnswer(operator, a, b) {
 
@@ -86,15 +100,6 @@ function getAnswer(operator, a, b) {
     }
 }
 
-function displayAnswer(finalAnswer) {
-    answer.textContent = finalAnswer;
-    total.textContent = finalAnswer;
-    secondNumber = null;
-    firstNumber = null;
-}
-
-
-
 
 // function addThirdNumber
 
@@ -107,8 +112,8 @@ function resetScreen() {
 
 
 function clearCalculator() {
-    answer.textContent = ''
-    total.textContent = ''
+    answer.textContent = '';
+    total.textContent = '';
     operator = null;
     firstNumber = '';
     secondNumber = '';
